@@ -1,49 +1,44 @@
-# Business Central Time Tracker for Azure DevOps
+# Business Central Time Tracker (Azure DevOps Extension)
 
-Track time on Azure DevOps work items and sync seamlessly to Microsoft Dynamics 365 Business Central.
-
-## Overview
-
-This Azure DevOps extension adds time tracking capabilities directly within work items, allowing teams to log time and automatically sync entries to Business Central's timesheet system.
+Tracks time inside Azure DevOps work items and syncs entries to Microsoft Dynamics 365 Business Central.
 
 ## Features
+- Manual time entry (date, hours, description, optional BC job number)
+- Work-item scoped history with total time
+- Date-range filtering
+- Sync status labels (`synced`, `pending`, `error`)
+- OAuth connect button for Business Central access token flow
 
-- **Manual Time Entry** - Add time entries with date, duration, and description directly from work items
-- **Time History** - View all time entries logged for each work item
-- **Business Central Integration** - Automatic synchronization with BC timeRegistrationEntry API
-- **OAuth Authentication** - Secure authentication via Microsoft Entra ID
+## Files
+- `vss-extension.json` extension manifest
+- `time-tracker.html` UI shell
+- `time-tracker.css` styles
+- `time-tracker.js` work-item integration + state
+- `auth.js` auth handling (demo-safe no secret-in-code flow)
+- `bc-api.js` Business Central API adapter + local fallback
 
-## Architecture
+## Dev/Test (standalone)
+Open `time-tracker.html?workItemId=12345` via local static file host to test UI logic.
 
-**Extension Type**: Work Item Form Extension
-**Target Platform**: Azure DevOps Services & Server
-**Integration**: Business Central API v2.0
-**Authentication**: OAuth 2.0 (Microsoft Entra ID)
+## Packaging
+Install tfx CLI and package:
 
-## Development Status
+```bash
+npm i -g tfx-cli
 
-This project is currently in planning phase. See [Issue #1](https://github.com/knowall-ai/devops-bc-timetracker/issues/1) for complete implementation details and technical specifications.
+tfx extension create --manifest-globs vss-extension.json
+```
 
-## Reference Implementations
+## Security notes
+- No client secret is embedded in source.
+- In production, use backend + PKCE + secure token handling.
+- This implementation stores token and local refs in localStorage for MVP only.
 
-- [Harvest Time Tracking for Azure DevOps](https://marketplace.visualstudio.com/items?itemName=SaaSKit.HarvestTimeTrackingForAzureDevOps)
-- [Zendesk BC TimeTracker](https://github.com/knowall-ai/zendesk-bc-timetracker)
+## Required config before real BC sync
+Edit `auth.js` and set:
+- `AUTH_CONFIG.clientId`
 
-## Documentation
-
-- [Azure DevOps Extension Development](https://learn.microsoft.com/en-us/azure/devops/extend/)
-- [Business Central API v2.0](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/)
-- [timeRegistrationEntry Resource](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/api-reference/v2.0/resources/dynamics_timeregistrationentry)
-
-## Contributing
-
-Contributions are welcome! Please check [Issue #1](https://github.com/knowall-ai/devops-bc-timetracker/issues/1) for the complete development roadmap and technical specifications.
-
-## License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Contact
-
-**Organization**: KnowAll.ai
-**Email**: ben.weeks@outlook.com
+Then set BC config in localStorage (or extend settings UI):
+- `tenantId`
+- `companyId`
+- `employeeId` (optional per your BC setup)

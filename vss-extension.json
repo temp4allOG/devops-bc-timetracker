@@ -1,0 +1,43 @@
+{
+  "manifestVersion": 1,
+  "id": "bc-timetracker",
+  "name": "Business Central Time Tracker",
+  "version": "1.0.0",
+  "publisher": "knowall-ai",
+  "description": "Track time on work items and sync to Microsoft Dynamics 365 Business Central",
+  "public": false,
+  "categories": ["Azure Boards"],
+  "targets": [{ "id": "Microsoft.VisualStudio.Services" }],
+  "icons": { "default": "img/logo.png" },
+  "content": {
+    "details": { "path": "README.md" },
+    "license": { "path": "TERMS.md" }
+  },
+  "links": {
+    "support": { "uri": "https://github.com/knowall-ai/devops-bc-timetracker/issues" },
+    "privacypolicy": { "uri": "https://github.com/knowall-ai/devops-bc-timetracker/blob/main/PRIVACY.md" }
+  },
+  "scopes": ["vso.work", "vso.work_write"],
+  "contributions": [
+    {
+      "id": "bc-timetracker-work-item-form",
+      "type": "ms.vss-work-web.work-item-form-group",
+      "description": "Track time and sync to Business Central",
+      "targets": ["ms.vss-work-web.work-item-form"],
+      "properties": {
+        "name": "Time Tracking",
+        "uri": "time-tracker.html",
+        "height": 500
+      }
+    }
+  ],
+  "files": [
+    { "path": "time-tracker.html", "addressable": true },
+    { "path": "time-tracker.css", "addressable": true },
+    { "path": "time-tracker.js", "addressable": true },
+    { "path": "bc-api.js", "addressable": true },
+    { "path": "auth.js", "addressable": true },
+    { "path": "sdk/scripts", "addressable": true },
+    { "path": "img", "addressable": true }
+  ]
+}

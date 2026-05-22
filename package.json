@@ -1,0 +1,10 @@
+{
+  "name": "devops-bc-timetracker",
+  "version": "1.0.0",
+  "description": "Azure DevOps work item extension for Business Central time tracking",
+  "scripts": {
+    "test": "node test/validate.js",
+    "package": "tfx extension create --manifest-globs vss-extension.json"
+  },
+  "devDependencies": {}
+}

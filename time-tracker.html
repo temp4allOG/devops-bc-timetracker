@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Business Central Time Tracker</title>
+  <link rel="stylesheet" href="time-tracker.css" />
+  <script src="sdk/scripts/VSS.SDK.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h2>Business Central Time Tracker</h2>
+
+    <section id="auth-section" class="card">
+      <button id="auth-button" class="primary">Connect to Business Central</button>
+      <p id="auth-status" class="muted">Not connected</p>
+    </section>
+
+    <section id="entry-form" class="card hidden">
+      <h3>Log Time Entry</h3>
+      <form id="time-entry-form">
+        <label>Date<input type="date" id="entry-date" required /></label>
+        <label>Hours<input type="number" id="entry-hours" min="0.25" step="0.25" required /></label>
+        <label>Description<textarea id="entry-description" rows="3"></textarea></label>
+        <label>BC Job Number (optional)<input type="text" id="bc-job-number" /></label>
+        <button type="submit" class="primary">Log Time</button>
+      </form>
+    </section>
+
+    <section id="history-section" class="card hidden">
+      <h3>Time Entry History</h3>
+      <div id="total-time">Total: <strong>0.00 hours</strong></div>
+      <label>From <input type="date" id="filter-from"></label>
+      <label>To <input type="date" id="filter-to"></label>
+      <button id="apply-filter">Apply Filter</button>
+      <div id="time-entries-list"></div>
+    </section>
+
+    <div id="loading-indicator" class="hidden">Loading…</div>
+    <div id="error-message" class="hidden error"></div>
+    <div id="success-message" class="hidden success"></div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="bc-api.js"></script>
+  <script src="time-tracker.js"></script>
+</body>
+</html>
