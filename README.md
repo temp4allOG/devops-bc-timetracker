@@ -7,7 +7,7 @@ Tracks time inside Azure DevOps work items and syncs entries to Microsoft Dynami
 - Work-item scoped history with total time
 - Date-range filtering
 - Sync status labels (`synced`, `pending`, `error`)
-- OAuth connect button for Business Central access token flow
+- OAuth 2.0 Authorization Code + PKCE connect flow for Business Central
 
 ## Files
 - `vss-extension.json` extension manifest
@@ -35,10 +35,11 @@ tfx extension create --manifest-globs vss-extension.json
 - This implementation stores token and local refs in localStorage for MVP only.
 
 ## Required config before real BC sync
-Edit `auth.js` and set:
-- `AUTH_CONFIG.clientId`
+Use the in-extension settings form to set:
+- Azure AD application/client ID
+- Business Central tenant ID
+- Business Central environment
+- Business Central company ID
+- Employee ID, if required by your BC setup
 
-Then set BC config in localStorage (or extend settings UI):
-- `tenantId`
-- `companyId`
-- `employeeId` (optional per your BC setup)
+The app uses browser-only PKCE for the MVP and does not embed a client secret. Production deployments should still consider a backend token broker depending on organizational policy.

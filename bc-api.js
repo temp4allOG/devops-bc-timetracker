@@ -2,8 +2,7 @@ const BC_CFG_KEY = 'bc_config';
 const LOCAL_ENTRIES_KEY = 'bc_local_entries';
 
 function getBCConfig() {
-  const fromStorage = JSON.parse(localStorage.getItem(BC_CFG_KEY) || 'null');
-  return fromStorage || {
+  return JSON.parse(localStorage.getItem(BC_CFG_KEY) || 'null') || {
     tenantId: '',
     environment: 'production',
     companyId: '',
@@ -12,10 +11,11 @@ function getBCConfig() {
   };
 }
 
-function saveBCConfig(cfg) { localStorage.setItem(BC_CFG_KEY, JSON.stringify(cfg)); }
+function saveBCConfig(cfg) { localStorage.setItem(BC_CFG_KEY, JSON.stringify({ ...getBCConfig(), ...cfg })); }
 
 function bcBase(cfg) {
-  return `https://api.businesscentral.dynamics.com/v2.0/${cfg.tenantId}/${cfg.environment}/api/v2.0/companies(${cfg.companyId})`;
+  const company = encodeURIComponent(cfg.companyId);
+  return `https://api.businesscentral.dynamics.com/v2.0/${encodeURIComponent(cfg.tenantId)}/${encodeURIComponent(cfg.environment || 'production')}/api/v2.0/companies(${company})`;
 }
 
 async function bcFetch(path, options = {}) {
@@ -41,38 +41,39 @@ async function createTimeEntryInBC(entry) {
     employeeId: cfg.employeeId || undefined,
     date: entry.date,
     quantity: entry.quantity,
-    jobNumber: entry.jobNumber || '',
-    jobTaskNumber: '',
+    jobNo: entry.jobNumber || undefined,
+    jobTaskNo: entry.jobTaskNumber || undefined,
     unitOfMeasureCode: cfg.unitOfMeasureCode || 'HOUR',
     description: entry.description || ''
   };
-  const created = await bcFetch('/timeRegistrationEntries', { method: 'POST', body: JSON.stringify(body) });
-  return created;
+  return bcFetch('/timeRegistrationEntries', { method: 'POST', body: JSON.stringify(body) });
 }
 
 function saveLocalReference(workItemId, ref) {
   const all = JSON.parse(localStorage.getItem(LOCAL_ENTRIES_KEY) || '{}');
-  if (!all[workItemId]) all[workItemId] = [];
-  all[workItemId].push(ref);
+  const key = String(workItemId);
+  if (!all[key]) all[key] = [];
+  const i = all[key].findIndex(e => e.clientId === ref.clientId || e.id === ref.id);
+  if (i >= 0) all[key][i] = ref; else all[key].push(ref);
   localStorage.setItem(LOCAL_ENTRIES_KEY, JSON.stringify(all));
 }
 
 function getLocalReferences(workItemId) {
   const all = JSON.parse(localStorage.getItem(LOCAL_ENTRIES_KEY) || '{}');
-  return all[workItemId] || [];
+  return all[String(workItemId)] || [];
 }
 
 async function getTimeEntriesForWorkItem(workItemId) {
-  // Prefer BC fetch if configured; fallback local refs.
   try {
     const data = await bcFetch('/timeRegistrationEntries');
     const values = data.value || [];
     return values.filter(e => (e.description || '').includes(`#${workItemId}`)).map(e => ({
       id: e.id,
+      clientId: e.id,
       date: e.date,
       quantity: Number(e.quantity || 0),
       description: e.description || '',
-      jobNumber: e.jobNumber || '',
+      jobNumber: e.jobNo || e.jobNumber || '',
       syncStatus: 'synced'
     }));
   } catch {

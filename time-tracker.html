@@ -11,8 +11,22 @@
   <div id="app">
     <h2>Business Central Time Tracker</h2>
 
+    <section id="settings-section" class="card">
+      <h3>Business Central Settings</h3>
+      <form id="settings-form">
+        <label>Azure AD Client ID<input type="text" id="cfg-client-id" placeholder="Application/client ID" /></label>
+        <label>Tenant ID<input type="text" id="cfg-tenant-id" placeholder="contoso.onmicrosoft.com or tenant GUID" /></label>
+        <label>Environment<input type="text" id="cfg-environment" placeholder="production" /></label>
+        <label>Company ID<input type="text" id="cfg-company-id" placeholder="Business Central company GUID" /></label>
+        <label>Employee ID<input type="text" id="cfg-employee-id" placeholder="Optional employee GUID" /></label>
+        <label>Unit of Measure<input type="text" id="cfg-uom" placeholder="HOUR" /></label>
+        <button type="submit">Save Settings</button>
+      </form>
+    </section>
+
     <section id="auth-section" class="card">
       <button id="auth-button" class="primary">Connect to Business Central</button>
+      <button id="disconnect-button" type="button">Disconnect</button>
       <p id="auth-status" class="muted">Not connected</p>
     </section>
 
